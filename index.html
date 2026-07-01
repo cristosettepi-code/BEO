@@ -28,18 +28,42 @@
             justify-content: center;
             padding: 10px;
             color: #4a6fa5;
+            perspective: 2000px;
         }
 
         .invitation {
             max-width: 700px;
             width: 100%;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             border: 2px solid #d4c896;
             border-radius: 12px;
             padding: 40px 30px;
             position: relative;
-            box-shadow: 0 15px 40px rgba(74, 111, 165, 0.15);
+            box-shadow: 
+                0 15px 40px rgba(74, 111, 165, 0.15),
+                0 0 0 1px rgba(212, 200, 150, 0.3),
+                inset 0 0 60px rgba(253, 248, 231, 0.5);
             overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        /* Efecto de brillo en bordes */
+        .invitation::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #d4c896, #d4a843, #d4c896, #4a6fa5);
+            border-radius: 14px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .invitation:hover::before {
+            opacity: 0.3;
         }
 
         /* Navegación de pestañas */
@@ -51,6 +75,8 @@
             border-bottom: 2px solid #d4c896;
             padding-bottom: 12px;
             flex-wrap: wrap;
+            position: relative;
+            z-index: 10;
         }
 
         .tab-btn {
@@ -61,42 +87,225 @@
             border: 2px solid #d4c896;
             border-radius: 25px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             color: #5a7fb5;
             letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(212, 200, 150, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .tab-btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .tab-btn:hover {
-            background: rgba(212, 200, 150, 0.2);
-            transform: translateY(-2px);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(74, 111, 165, 0.2);
+            border-color: #4a6fa5;
         }
 
         .tab-btn.active {
-            background: #d4c896;
+            background: linear-gradient(135deg, #d4c896 0%, #d4a843 100%);
             color: white;
-            border-color: #d4c896;
+            border-color: #d4a843;
+            box-shadow: 0 5px 15px rgba(212, 168, 67, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Contenedor de pestañas con efecto de paginación */
+        .tabs-container {
+            position: relative;
+            transform-style: preserve-3d;
+            min-height: 400px;
         }
 
         .tab-content {
             display: none;
-            animation: fadeIn 0.5s ease;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            backface-visibility: hidden;
+            transform-style: preserve-3d;
         }
 
         .tab-content.active {
             display: block;
+            position: relative;
+            animation: none;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
+        /* Animación de paginación tipo cuaderno - salida */
+        @keyframes pageFlipOut {
+            0% {
+                transform: rotateY(0deg) translateZ(0);
                 opacity: 1;
-                transform: translateY(0);
+            }
+            50% {
+                transform: rotateY(-90deg) translateZ(50px);
+                opacity: 0.5;
+            }
+            100% {
+                transform: rotateY(-180deg) translateZ(0);
+                opacity: 0;
             }
         }
+
+        /* Animación de paginación tipo cuaderno - entrada */
+        @keyframes pageFlipIn {
+            0% {
+                transform: rotateY(180deg) translateZ(0);
+                opacity: 0;
+            }
+            50% {
+                transform: rotateY(90deg) translateZ(50px);
+                opacity: 0.5;
+            }
+            100% {
+                transform: rotateY(0deg) translateZ(0);
+                opacity: 1;
+            }
+        }
+
+        .tab-content.flipping-out {
+            display: block;
+            animation: pageFlipOut 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+            transform-origin: left center;
+        }
+
+        .tab-content.flipping-in {
+            display: block;
+            animation: pageFlipIn 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+            transform-origin: left center;
+        }
+
+        /* Efecto de sombra durante la paginación */
+        @keyframes pageShadow {
+            0% {
+                box-shadow: 0 0 0 rgba(0,0,0,0);
+            }
+            50% {
+                box-shadow: -20px 0 40px rgba(0,0,0,0.3);
+            }
+            100% {
+                box-shadow: 0 0 0 rgba(0,0,0,0);
+            }
+        }
+
+        /* ====== SÍMBOLOS DE GÉNERO GIRATORIOS ====== */
+        .gender-symbols-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gender-symbols-container::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(212, 168, 67, 0.1) 0%, transparent 70%);
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .gender-symbol {
+            position: absolute;
+            font-size: 55px;
+            transform-origin: center;
+            filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.2));
+        }
+
+        .gender-male {
+            color: #4a6fa5;
+            animation: orbitMale 4s linear infinite;
+        }
+
+        .gender-female {
+            color: #d4a843;
+            animation: orbitFemale 4s linear infinite;
+        }
+
+        @keyframes orbitMale {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg) translateX(35px) rotate(0deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg) translateX(35px) rotate(-360deg);
+            }
+        }
+
+        @keyframes orbitFemale {
+            0% {
+                transform: translate(-50%, -50%) rotate(180deg) translateX(35px) rotate(-180deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(540deg) translateX(35px) rotate(180deg);
+            }
+        }
+
+        /* Centro decorativo */
+        .gender-center {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #d4a843, #d4c896);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(212, 168, 67, 0.6);
+            animation: centerPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes centerPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(212, 168, 67, 0.6); }
+            50% { transform: scale(1.3); box-shadow: 0 0 25px rgba(212, 168, 67, 0.9); }
+        }
+
+        /* Versión alternativa: símbolos entrelazados girando juntos */
+        .gender-spin-together {
+            display: inline-block;
+            animation: spinTogether 5s linear infinite;
+            font-size: 3rem;
+            margin: 10px 0;
+        }
+
+        .gender-spin-together .male {
+            color: #4a6fa5;
+            filter: drop-shadow(2px 2px 4px rgba(74, 111, 165, 0.4));
+        }
+
+        .gender-spin-together .female {
+            color: #d4a843;
+            filter: drop-shadow(2px 2px 4px rgba(212, 168, 67, 0.4));
+        }
+
+        @keyframes spinTogether {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* ====== FIN SÍMBOLOS DE GÉNERO ====== */
 
         /* Limones decorativos SVG */
         .lemon-decor {
@@ -104,22 +313,56 @@
             width: 120px;
             height: 120px;
             z-index: 1;
+            filter: drop-shadow(2px 4px 6px rgba(74, 111, 165, 0.15));
+            transition: transform 0.5s ease;
+        }
+
+        .lemon-decor:hover {
+            transform: scale(1.1) rotate(5deg);
         }
 
         .lemon-top-left {
             top: -10px;
             left: -10px;
+            animation: floatLemon 6s ease-in-out infinite;
         }
 
         .lemon-bottom-right {
             bottom: -10px;
             right: -10px;
             transform: rotate(180deg);
+            animation: floatLemon 6s ease-in-out infinite 3s;
+        }
+
+        @keyframes floatLemon {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(3deg); }
+        }
+
+        .lemon-bottom-right {
+            animation: floatLemonBottom 6s ease-in-out infinite 3s;
+        }
+
+        @keyframes floatLemonBottom {
+            0%, 100% { transform: rotate(180deg) translateY(0); }
+            50% { transform: rotate(180deg) translateY(-10px); }
         }
 
         .header {
             text-align: center;
             margin-bottom: 25px;
+            animation: slideDown 1s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .header .small {
@@ -129,6 +372,10 @@
             color: #5a7fb5;
             text-transform: uppercase;
             margin-bottom: 8px;
+            background: linear-gradient(90deg, #5a7fb5, #d4a843);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .names {
@@ -137,7 +384,17 @@
             color: #4a6fa5;
             line-height: 1.1;
             margin: 10px 0;
-            text-shadow: 2px 2px 4px rgba(74, 111, 165, 0.1);
+            text-shadow: 2px 2px 4px rgba(74, 111, 165, 0.15);
+            background: linear-gradient(135deg, #4a6fa5 0%, #5a7fb5 50%, #d4a843 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.1); }
         }
 
         .ampersand {
@@ -146,6 +403,7 @@
             color: #d4a843;
             display: block;
             margin: -8px 0;
+            animation: pulse 2s infinite;
         }
 
         .event-title {
@@ -153,6 +411,24 @@
             font-size: 2.2rem;
             color: #4a6fa5;
             margin: 15px 0;
+            position: relative;
+            display: inline-block;
+        }
+
+        .event-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #d4a843, transparent);
+            animation: expandLine 2s ease forwards;
+        }
+
+        @keyframes expandLine {
+            to { width: 100%; }
         }
 
         .divider {
@@ -175,6 +451,12 @@
 
         .divider span {
             margin: 0 12px;
+            animation: bounce 2s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
 
         /* Texto de invitación */
@@ -190,6 +472,31 @@
             color: #5a7fb5;
             margin-bottom: 15px;
             letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .invitation-text h2::before,
+        .invitation-text h2::after {
+            content: '✨';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            animation: sparkle 1.5s ease infinite;
+        }
+
+        .invitation-text h2::before {
+            left: -30px;
+        }
+
+        .invitation-text h2::after {
+            right: -30px;
+            animation-delay: 0.75s;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+            50% { opacity: 0.5; transform: translateY(-50%) scale(1.3); }
         }
 
         .invitation-text p {
@@ -203,14 +510,40 @@
         .animation-container {
             text-align: center;
             margin: 25px 0;
+            position: relative;
+        }
+
+        .animation-container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(45deg, #d4c896, #d4a843, #4a6fa5, #d4c896);
+            border-radius: 20px;
+            z-index: -1;
+            opacity: 0.3;
+            animation: rotateGradient 4s linear infinite;
+        }
+
+        @keyframes rotateGradient {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .animation-container img {
             max-width: 100%;
             height: auto;
             border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(74, 111, 165, 0.2);
+            box-shadow: 0 8px 25px rgba(74, 111, 165, 0.25);
             border: 3px solid #d4c896;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .animation-container img:hover {
+            transform: scale(1.02) rotate(1deg);
+            box-shadow: 0 12px 35px rgba(74, 111, 165, 0.35);
         }
 
         /* Sección de votación */
@@ -252,15 +585,30 @@
             border-radius: 15px;
             padding: 20px 12px;
             cursor: pointer;
-            transition: all 0.4s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
         }
 
+        .vote-option::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            transform: scale(0);
+            transition: transform 0.6s ease;
+        }
+
+        .vote-option:hover::before {
+            transform: scale(1);
+        }
+
         .vote-option:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(74, 111, 165, 0.2);
-            border-color: #4a6fa5;
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 15px 35px rgba(74, 111, 165, 0.25);
         }
 
         .vote-option.boy {
@@ -268,7 +616,8 @@
         }
 
         .vote-option.boy:hover {
-            background: rgba(143, 184, 217, 0.15);
+            background: rgba(143, 184, 217, 0.2);
+            border-color: #5a8ab5;
         }
 
         .vote-option.girl {
@@ -276,12 +625,18 @@
         }
 
         .vote-option.girl:hover {
-            background: rgba(232, 180, 200, 0.15);
+            background: rgba(232, 180, 200, 0.2);
+            border-color: #c87a9a;
         }
 
         .vote-icon {
             font-size: 2.8rem;
             margin-bottom: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .vote-option:hover .vote-icon {
+            transform: scale(1.2) rotate(10deg);
         }
 
         .vote-label {
@@ -325,21 +680,41 @@
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-vote::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .btn-vote:hover::before {
+            width: 200px;
+            height: 200px;
         }
 
         .vote-option.boy .btn-vote {
-            background: #8fb8d9;
+            background: linear-gradient(135deg, #8fb8d9 0%, #5a8ab5 100%);
             color: white;
         }
 
         .vote-option.girl .btn-vote {
-            background: #e8b4c8;
+            background: linear-gradient(135deg, #e8b4c8 0%, #c87a9a 100%);
             color: white;
         }
 
         .btn-vote:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            transform: scale(1.08);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
         .total-votes {
@@ -372,12 +747,43 @@
             background: linear-gradient(90deg, #8fb8d9, #5a8ab5);
             height: 100%;
             transition: width 0.6s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-boy::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .progress-girl {
             background: linear-gradient(90deg, #e8b4c8, #c87a9a);
             height: 100%;
             transition: width 0.6s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-girl::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shine 2s infinite 1s;
         }
 
         .progress-labels {
@@ -396,7 +802,8 @@
             width: fit-content;
             margin: 25px auto;
             padding: 14px 35px;
-            background: linear-gradient(135deg, #d4a843 0%, #d4c896 100%);
+            background: linear-gradient(135deg, #d4a843 0%, #d4c896 50%, #d4a843 100%);
+            background-size: 200% 100%;
             color: white;
             border: none;
             border-radius: 30px;
@@ -404,13 +811,36 @@
             font-size: 1rem;
             letter-spacing: 2px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
             box-shadow: 0 5px 15px rgba(212, 168, 67, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .gift-list-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .gift-list-btn:hover::before {
+            left: 100%;
         }
 
         .gift-list-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(212, 168, 67, 0.4);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(212, 168, 67, 0.5);
         }
 
         /* Modal de lista de regalos */
@@ -426,7 +856,7 @@
             justify-content: center;
             align-items: center;
             padding: 15px;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
         }
 
         .modal-overlay.active {
@@ -443,27 +873,60 @@
             overflow-y: auto;
             position: relative;
             border: 3px solid #d4c896;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+            animation: modalSlideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
 
         .modal-header {
-            background: linear-gradient(135deg, #4a6fa5 0%, #5a7fb5 100%);
+            background: linear-gradient(135deg, #4a6fa5 0%, #5a7fb5 50%, #d4a843 100%);
             color: white;
             padding: 20px;
             text-align: center;
             position: relative;
+            overflow: hidden;
+        }
+
+        .modal-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .modal-header h2 {
             font-family: 'Great Vibes', cursive;
             font-size: 2.2rem;
             margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
         }
 
         .modal-header p {
             font-family: 'Playfair Display', serif;
             font-size: 0.95rem;
             opacity: 0.9;
+            position: relative;
+            z-index: 1;
         }
 
         .modal-close {
@@ -480,10 +943,11 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
+            z-index: 2;
         }
 
         .modal-close:hover {
-            transform: rotate(90deg);
+            transform: rotate(90deg) scale(1.2);
             background: rgba(255, 255, 255, 0.2);
         }
 
@@ -493,6 +957,18 @@
 
         .gift-category {
             margin-bottom: 25px;
+            animation: slideUp 0.6s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .gift-category h3 {
@@ -510,6 +986,7 @@
         .gift-category h3::before {
             content: '🍋';
             font-size: 1.1rem;
+            animation: bounce 2s ease infinite;
         }
 
         .gift-list {
@@ -530,9 +1007,10 @@
         }
 
         .gift-list li:hover {
-            background: rgba(212, 200, 150, 0.2);
-            transform: translateX(5px);
+            background: rgba(212, 200, 150, 0.3);
+            transform: translateX(8px);
             border-left-color: #4a6fa5;
+            box-shadow: 0 3px 10px rgba(74, 111, 165, 0.1);
         }
 
         .gift-list li::before {
@@ -564,6 +1042,20 @@
             color: #4a6fa5;
             text-align: center;
             margin-bottom: 25px;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #d4a843, transparent);
         }
 
         .contact-info {
@@ -572,6 +1064,7 @@
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(74, 111, 165, 0.08);
         }
 
         .contact-item {
@@ -581,18 +1074,26 @@
             padding: 12px;
             background: rgba(255, 255, 255, 0.8);
             border-radius: 8px;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
         }
 
         .contact-item:hover {
-            transform: translateX(5px);
-            background: rgba(212, 200, 150, 0.15);
+            transform: translateX(8px);
+            background: rgba(212, 200, 150, 0.2);
+            border-left-color: #d4a843;
+            box-shadow: 0 5px 15px rgba(74, 111, 165, 0.1);
         }
 
         .contact-icon {
             font-size: 1.6rem;
             margin-right: 12px;
             min-width: 35px;
+            transition: transform 0.3s ease;
+        }
+
+        .contact-item:hover .contact-icon {
+            transform: scale(1.2) rotate(10deg);
         }
 
         .contact-details h3 {
@@ -616,12 +1117,27 @@
         .contact-details a {
             color: #4a6fa5;
             text-decoration: none;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .contact-details a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #d4a843;
+            transition: width 0.3s ease;
+        }
+
+        .contact-details a:hover::after {
+            width: 100%;
         }
 
         .contact-details a:hover {
             color: #d4a843;
-            text-decoration: underline;
         }
 
         /* Mapa */
@@ -631,6 +1147,12 @@
             overflow: hidden;
             margin-bottom: 20px;
             box-shadow: 0 5px 15px rgba(74, 111, 165, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .map-container:hover {
+            transform: scale(1.01);
+            box-shadow: 0 8px 25px rgba(74, 111, 165, 0.15);
         }
 
         .map-container iframe {
@@ -645,6 +1167,13 @@
             padding: 18px;
             border-radius: 8px;
             text-align: center;
+            border: 2px solid #d4c896;
+            transition: all 0.3s ease;
+        }
+
+        .map-info:hover {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 20px rgba(74, 111, 165, 0.1);
         }
 
         .map-info h3 {
@@ -664,7 +1193,7 @@
             display: inline-block;
             margin-top: 12px;
             padding: 12px 28px;
-            background: #4a6fa5;
+            background: linear-gradient(135deg, #4a6fa5 0%, #5a7fb5 100%);
             color: white;
             text-decoration: none;
             border-radius: 25px;
@@ -674,12 +1203,32 @@
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-directions::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .btn-directions:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-directions:hover {
-            background: #d4a843;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #d4a843 0%, #d4c896 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
         /* Footer */
@@ -699,29 +1248,14 @@
         }
 
         @keyframes pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.2);
-            }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
         }
 
         @keyframes pop {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.3);
-            }
-
-            100% {
-                transform: scale(1);
-            }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
         }
 
         .pop {
@@ -742,10 +1276,61 @@
                 transform: translateY(-100px) rotate(0deg);
                 opacity: 1;
             }
-
             100% {
                 transform: translateY(600px) rotate(720deg);
                 opacity: 0;
+            }
+        }
+
+        /* Animación de patitas de perro */
+        .paw-print {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            pointer-events: none;
+            z-index: 9999;
+            animation: pawAppear 1.5s ease-out forwards;
+        }
+
+        @keyframes pawAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(0deg);
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1.2) rotate(10deg);
+            }
+            70% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8) translateY(-20px) rotate(-10deg);
+            }
+        }
+
+        /* Partículas de fondo */
+        .particle {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, #d4a843, transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatParticle 8s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes floatParticle {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translateY(-100px) translateX(50px);
+                opacity: 0.6;
             }
         }
 
@@ -848,6 +1433,43 @@
             .contact-details p {
                 font-size: 0.9rem;
             }
+
+            .paw-print {
+                width: 30px;
+                height: 30px;
+            }
+
+            /* Símbolos responsivos */
+            .gender-symbols-container {
+                width: 110px;
+                height: 110px;
+            }
+
+            .gender-symbol {
+                font-size: 42px;
+            }
+
+            .gender-male, .gender-female {
+                animation-duration: 5s;
+            }
+
+            @keyframes orbitMale {
+                0% {
+                    transform: translate(-50%, -50%) rotate(0deg) translateX(28px) rotate(0deg);
+                }
+                100% {
+                    transform: translate(-50%, -50%) rotate(360deg) translateX(28px) rotate(-360deg);
+                }
+            }
+
+            @keyframes orbitFemale {
+                0% {
+                    transform: translate(-50%, -50%) rotate(180deg) translateX(28px) rotate(-180deg);
+                }
+                100% {
+                    transform: translate(-50%, -50%) rotate(540deg) translateX(28px) rotate(180deg);
+                }
+            }
         }
 
         @media (max-width: 400px) {
@@ -905,161 +1527,144 @@
 
         <!-- Navegación de pestañas -->
         <div class="tab-navigation">
-            <button class="tab-btn active" onclick="showTab('invitation')">Invitación</button>
-            <button class="tab-btn" onclick="showTab('contact')">Contacto y Ubicación</button>
+            <button class="tab-btn active" onclick="showTab('invitation', this)">Invitación</button>
+            <button class="tab-btn" onclick="showTab('contact', this)">Contacto y Ubicación</button>
         </div>
 
-        <!-- Pestaña 1: Invitación -->
-        <div id="tab-invitation" class="tab-content active">
-            <div class="header">
-                <div class="small">Por favor acompáñanos</div>
-                <div class="names">
-                    Itzel
-                    <span class="ampersand">&</span>
-                    Ángel
-                </div>
-                <div class="divider"><span>🍋</span></div>
-                <div class="event-title">Baby Shower</div>
-            </div>
-
-            <!-- Texto de invitación -->
-            <div class="invitation-text">
-                <h2>¡La espera casi termina!</h2>
-                <p>Queremos invitarte a nuestra reunión de Baby Shower para celebrar juntos la llegada de nuestro
-                    pequeño(a). Ven a disfrutar de una tarde llena de amor, alegría y grandes momentos.</p>
-            </div>
-
-            <!-- Imagen de animación -->
-            <div class="animation-container">
-                <img src="animacion.png" alt="Baby Shower Animation">
-            </div>
-
-            <div class="vote-section">
-                <div class="vote-title">¿Qué será?</div>
-                <div class="vote-subtitle">¡Vota y descúbrelo con nosotros!</div>
-
-                <div class="vote-container">
-                    <div class="vote-option boy" onclick="vote('boy')">
-                        <div class="vote-icon">👶</div>
-                        <div class="vote-label">Niño</div>
-                        <div class="vote-count" id="boy-count">0</div>
-                        <button class="btn-vote">Votar</button>
+        <!-- Contenedor de pestañas -->
+        <div class="tabs-container">
+            <!-- Pestaña 1: Invitación -->
+            <div id="tab-invitation" class="tab-content active">
+                <div class="header">
+                    <div class="small">Por favor acompáñanos</div>
+                    <div class="names">
+                        Itzel
+                        <span class="ampersand">&</span>
+                        Ángel
                     </div>
-
-                    <div class="vote-option girl" onclick="vote('girl')">
-                        <div class="vote-icon">👧</div>
-                        <div class="vote-label">Niña</div>
-                        <div class="vote-count" id="girl-count">0</div>
-                        <button class="btn-vote">Votar</button>
+                    <div class="divider"><span>🍋</span></div>
+                    <div class="event-title">Baby Shower</div>
+                    
+                    <!-- ✨ NUEVO: Símbolos de género giratorios ✨ -->
+                    <div class="gender-symbols-container" title="¿Niño o Niña?">
+                        <div class="gender-center"></div>
+                        <span class="gender-symbol gender-male">♂</span>
+                        <span class="gender-symbol gender-female">♀</span>
                     </div>
                 </div>
 
-                <div class="progress-bar">
-                    <div class="progress-boy" id="progress-boy" style="width: 50%"></div>
-                    <div class="progress-girl" id="progress-girl" style="width: 50%"></div>
-                </div>
-                <div class="progress-labels">
-                    <span id="boy-pct">50%</span>
-                    <span id="girl-pct">50%</span>
+                <!-- Texto de invitación -->
+                <div class="invitation-text">
+                    <h2>¡La espera casi termina!</h2>
+                    <p>Queremos invitarte a nuestra reunión de Baby Shower para celebrar juntos la llegada de nuestro
+                        pequeño(a). Ven a disfrutar de una tarde llena de amor, alegría y grandes momentos.</p>
                 </div>
 
-                <div class="total-votes">
-                    Votos totales: <strong id="total-count">0</strong>
+                <!-- Imagen de animación -->
+                <div class="animation-container">
+                    <img src="animacion.png" alt="Baby Shower Animation">
+                </div>
+
+                <!-- Botón de lista de regalos -->
+                <button class="gift-list-btn" onclick="openModal()">🎁 Ver lista de regalos</button>
+
+                <div class="footer-info">
+                    Con mucho cariño <span class="heart">♥</span>
                 </div>
             </div>
 
-            <!-- Botón de lista de regalos -->
-            <button class="gift-list-btn" onclick="openModal()">🎁 Ver lista de regalos</button>
+            <!-- Pestaña 2: Contacto y Ubicación -->
+            <div id="tab-contact" class="tab-content">
+                <h2 class="section-title">Contacto y Ubicación</h2>
 
-            <div class="footer-info">
-                Con mucho cariño <span class="heart">♥</span>
+                <div class="contact-section">
+                    <!-- Información de contacto -->
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon">📞</div>
+                            <div class="contact-details">
+                                <h3>Teléfono</h3>
+                                <p>
+                                    <a href="tel:+521234567890">+52 664 456 2091</a><br>
+                                    <small>Itzel - Confirmaciones</small>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">📱</div>
+                            <div class="contact-details">
+                                <h3>Teléfono</h3>
+                                <p>
+                                    <a href="tel:+520987654321">+52 664 476 5375</a><br>
+                                    <small>Ángel - Confirmaciones</small>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">✉️</div>
+                            <div class="contact-details">
+                                <h3>Correo Electrónico</h3>
+                                <p>
+                                    <a href="mailto:vasquezmacias@email.com">vasquezmacias@email.com</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">📅</div>
+                            <div class="contact-details">
+                                <h3>Fecha del Evento</h3>
+                                <p>Domingo 24 de Mayo, 2026<br>12:00 pm - 3:00 pm</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">🎁</div>
+                            <div class="contact-details">
+                                <h3>Mesa de Regalos</h3>
+                                <p>
+                                    Amazon Baby Registry<br>
+                                    <a href="#" onclick="openModal(); return false;">Ver lista de regalos</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mapa de Google Maps -->
+                    <div class="map-container">
+                        <iframe
+                            src="https://maps.google.com/maps?q=32.54883542766663,-116.87263772166177&z=15&output=embed"
+                            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+
+                    <div class="map-info">
+                        <h3>📍 Granjas Familiares División del Norte</h3>
+                        <p style="font-family: 'Great Vibes', cursive; font-size: 1.6rem; color: #c87a9a; margin: 5px 0;">
+                            Nuestro Hogar, Dulce Hogar
+                        </p>
+                        <p style="margin-top: 10px; font-style: italic; color: #d4a843;">
+                            🅿️ Estacionamiento disponible
+                        </p>
+                        <a href="https://www.google.com/maps/search/?api=1&query=32.54883542766663,-116.87263772166177" target="_blank"
+                            class="btn-directions">
+                            🗺️ Cómo llegar
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-info">
+                    ¡Esperamos verte! <span class="heart">♥</span>
+                </div>
             </div>
         </div>
 
-        <!-- Pestaña 2: Contacto y Ubicación -->
-        <div id="tab-contact" class="tab-content">
-            <h2 class="section-title">Contacto y Ubicación</h2>
-
-            <div class="contact-section">
-                <!-- Información de contacto -->
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <div class="contact-icon">📞</div>
-                        <div class="contact-details">
-                            <h3>Teléfono</h3>
-                            <p>
-                                <a href="tel:+521234567890">+52 123 456 7890</a><br>
-                                <small>Itzel - Confirmaciones</small>
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-icon">📱</div>
-                        <div class="contact-details">
-                            <h3>Teléfono</h3>
-                            <p>
-                                <a href="tel:+520987654321">+52 098 765 4321</a><br>
-                                <small>Ángel - Confirmaciones</small>
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-icon">✉️</div>
-                        <div class="contact-details">
-                            <h3>Correo Electrónico</h3>
-                            <p>
-                                <a href="mailto:itzelangel.babyshower@email.com">itzelangel.babyshower@email.com</a>
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-icon"></div>
-                        <div class="contact-details">
-                            <h3>Fecha del Evento</h3>
-                            <p>Domingo 24 de Mayo, 2026<br>12:00 pm - 3:00 pm</p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-icon">🎁</div>
-                        <div class="contact-details">
-                            <h3>Mesa de Regalos</h3>
-                            <p>
-                                Amazon Baby Registry<br>
-                                <a href="#" onclick="openModal(); return false;">Ver lista de regalos</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mapa de Google Maps -->
-                <div class="map-container">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.888053155!2d-99.1686926850935!3d19.427024586893!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1ff35f5bd1563%3A0x6c366f0e2de02ff7!2sEl%20%C3%81ngel%20Ciudad%20de%20M%C3%A9xico!5e0!3m2!1ses-419!2smx!4v1234567890123!5m2!1ses-419!2smx"
-                        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-                    </iframe>
-                </div>
-
-                <div class="map-info">
-                    <h3>📍 Green Hills Pavilion</h3>
-                    <p>Av. Principal #123, Colonia Las Flores</p>
-                    <p>Ciudad de México, CDMX 01000</p>
-                    <p style="margin-top: 10px; font-style: italic; color: #d4a843;">
-                        🅿️ Estacionamiento disponible
-                    </p>
-                    <a href="https://www.google.com/maps/search/?api=1&query=19.4270245,-99.1686926" target="_blank"
-                        class="btn-directions">
-                        🗺️ Cómo llegar
-                    </a>
-                </div>
-            </div>
-
-            <div class="footer-info">
-                ¡Esperamos verte! <span class="heart">♥</span>
-            </div>
+        <!-- Copyright -->
+        <div
+            style="text-align: center; font-size: 0.75rem; color: #7a8fb5; margin-top: 20px; padding-top: 15px; border-top: 1px solid #f0e9d0;">
+            Derechos reservados Cristo Josue. 2026
         </div>
 
     </div>
@@ -1147,7 +1752,6 @@
                     <ul class="gift-list">
                         <li>Silla de auto para bebé</li>
                         <li>Cochecito/carriola</li>
-                        <li>Portabebés ergonómico</li>
                         <li>Bolsa de pañales</li>
                         <li>Protectores de esquinas</li>
                         <li>Cerrojos de seguridad</li>
@@ -1164,16 +1768,36 @@
     </div>
 
     <script>
-        // Cambio de pestañas
-        function showTab(tabName) {
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
+        // Cambio de pestañas con efecto de paginación
+        let isAnimating = false;
 
+        function showTab(tabName, btnElement) {
+            if (isAnimating) return;
+            
+            const currentTab = document.querySelector('.tab-content.active');
+            const newTab = document.getElementById('tab-' + tabName);
+            
+            if (currentTab === newTab) return;
+            
+            isAnimating = true;
+            
+            // Actualizar botones
             const buttons = document.querySelectorAll('.tab-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
-
-            document.getElementById('tab-' + tabName).classList.add('active');
-            event.target.classList.add('active');
+            btnElement.classList.add('active');
+            
+            // Aplicar animación de paginación
+            currentTab.classList.add('flipping-out');
+            
+            setTimeout(() => {
+                currentTab.classList.remove('active', 'flipping-out');
+                newTab.classList.add('active', 'flipping-in');
+                
+                setTimeout(() => {
+                    newTab.classList.remove('flipping-in');
+                    isAnimating = false;
+                }, 800);
+            }, 400);
         }
 
         // Modal de lista de regalos
@@ -1200,55 +1824,63 @@
             }
         });
 
-        // Sistema de votación
-        let boyVotes = parseInt(localStorage.getItem('babyBoyVotes') || '0');
-        let girlVotes = parseInt(localStorage.getItem('babyGirlVotes') || '0');
+        // Animación de patitas de perro al hacer clic
+        function createPawPrint(x, y) {
+            const paw = document.createElement('div');
+            paw.className = 'paw-print';
+            paw.style.left = (x - 20) + 'px';
+            paw.style.top = (y - 20) + 'px';
+            
+            // SVG de patita de perro
+            paw.innerHTML = `
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Almohadilla principal -->
+                    <ellipse cx="50" cy="65" rx="25" ry="20" fill="#d4a843" opacity="0.8"/>
+                    <!-- Dedos -->
+                    <ellipse cx="30" cy="40" rx="10" ry="12" fill="#d4a843" opacity="0.8" transform="rotate(-15 30 40)"/>
+                    <ellipse cx="45" cy="30" rx="10" ry="12" fill="#d4a843" opacity="0.8"/>
+                    <ellipse cx="60" cy="30" rx="10" ry="12" fill="#d4a843" opacity="0.8"/>
+                    <ellipse cx="75" cy="40" rx="10" ry="12" fill="#d4a843" opacity="0.8" transform="rotate(15 75 40)"/>
+                    <!-- Detalles -->
+                    <ellipse cx="50" cy="65" rx="18" ry="14" fill="#c89a3a" opacity="0.6"/>
+                    <ellipse cx="30" cy="40" rx="6" ry="8" fill="#c89a3a" opacity="0.6" transform="rotate(-15 30 40)"/>
+                    <ellipse cx="45" cy="30" rx="6" ry="8" fill="#c89a3a" opacity="0.6"/>
+                    <ellipse cx="60" cy="30" rx="6" ry="8" fill="#c89a3a" opacity="0.6"/>
+                    <ellipse cx="75" cy="40" rx="6" ry="8" fill="#c89a3a" opacity="0.6" transform="rotate(15 75 40)"/>
+                </svg>
+            `;
+            
+            document.body.appendChild(paw);
+            
+            // Eliminar después de la animación
+            setTimeout(() => {
+                paw.remove();
+            }, 1500);
+        }
 
-        function updateDisplay(animate = false) {
-            const boyEl = document.getElementById('boy-count');
-            const girlEl = document.getElementById('girl-count');
-            const totalEl = document.getElementById('total-count');
-            const total = boyVotes + girlVotes;
+        // Escuchar clics en toda la página
+        document.addEventListener('click', function(e) {
+            // No crear patitas en el modal
+            if (e.target.closest('.modal-overlay')) return;
+            
+            createPawPrint(e.clientX, e.clientY);
+        });
 
-            boyEl.textContent = boyVotes;
-            girlEl.textContent = girlVotes;
-            totalEl.textContent = total;
-
-            if (animate) {
-                boyEl.classList.remove('pop');
-                girlEl.classList.remove('pop');
-                void boyEl.offsetWidth;
-                boyEl.classList.add('pop');
-                girlEl.classList.add('pop');
-            }
-
-            if (total > 0) {
-                const boyPct = Math.round((boyVotes / total) * 100);
-                const girlPct = 100 - boyPct;
-                document.getElementById('progress-boy').style.width = boyPct + '%';
-                document.getElementById('progress-girl').style.width = girlPct + '%';
-                document.getElementById('boy-pct').textContent = boyPct + '%';
-                document.getElementById('girl-pct').textContent = girlPct + '%';
-            } else {
-                document.getElementById('progress-boy').style.width = '50%';
-                document.getElementById('progress-girl').style.width = '50%';
-                document.getElementById('boy-pct').textContent = '50%';
-                document.getElementById('girl-pct').textContent = '50%';
+        // Crear partículas de fondo
+        function createParticles() {
+            const colors = ['#d4a843', '#d4c896', '#4a6fa5', '#5a7fb5'];
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+                document.body.appendChild(particle);
             }
         }
 
-        function vote(type) {
-            if (type === 'boy') {
-                boyVotes++;
-                localStorage.setItem('babyBoyVotes', boyVotes);
-                createConfetti('#8fb8d9');
-            } else {
-                girlVotes++;
-                localStorage.setItem('babyGirlVotes', girlVotes);
-                createConfetti('#e8b4c8');
-            }
-            updateDisplay(true);
-        }
+        createParticles();
 
         function createConfetti(color) {
             const invitation = document.getElementById('invitation');
@@ -1264,9 +1896,6 @@
                 setTimeout(() => confetti.remove(), 3000);
             }
         }
-
-        // Inicializar
-        updateDisplay();
     </script>
 
 </body>
